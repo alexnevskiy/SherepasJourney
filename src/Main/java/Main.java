@@ -10,6 +10,7 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
 import java.io.FileInputStream;
+import java.util.TreeSet;
 
 public class Main extends Application {
     Button playButton;  //  Кнопки в меню
@@ -57,5 +58,9 @@ public class Main extends Application {
         helpButton.setOnAction(e -> primaryStage.setScene(helpScene));
         exitButton.setOnAction(e -> primaryStage.close());
         backButton.setOnAction(e -> primaryStage.setScene(mainScene));
+
+
     }
 }
+
+
