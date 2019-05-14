@@ -40,13 +40,15 @@ public class Main extends Application {
 
         Image background = new Image(new FileInputStream("./images/BackgroundMenu.jpg"), 1280.0, 720.0, true, true);
         Image backgroundGame = new Image(new FileInputStream("./images/BackgroundGame.jpg"), 1280.0, 720.0, true, true);
+        Image shrek = new Image(new FileInputStream("./images/Shrek.png"));
         ImageView backgroundMenu = new ImageView(background);
         ImageView backgroundHelpMenu = new ImageView(background);
         ImageView backgroundGameView = new ImageView(backgroundGame);
+        ImageView shrekView = new ImageView(shrek);
 
         StackPane layout = new StackPane(backgroundMenu, playButton, helpButton, exitButton, backButton);
         StackPane helpLayout = new StackPane(backgroundHelpMenu, backButton);
-        StackPane gameLayout = new StackPane(backgroundGameView);
+        StackPane gameLayout = new StackPane(backgroundGameView, shrekView);
 
         Scene mainScene = new Scene(layout, 1280, 720);
         primaryStage.setScene(mainScene);
@@ -59,7 +61,8 @@ public class Main extends Application {
         exitButton.setOnAction(e -> primaryStage.close());
         backButton.setOnAction(e -> primaryStage.setScene(mainScene));
 
-
+        Sherepa sherepa = new Sherepa(gameScene, shrekView);
+        sherepa.start();
     }
 }
 

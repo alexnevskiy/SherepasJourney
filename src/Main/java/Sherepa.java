@@ -1,4 +1,6 @@
 import javafx.scene.Scene;
+import javafx.scene.image.ImageView;
+
 
 public class Sherepa {
 
@@ -7,10 +9,21 @@ public class Sherepa {
     private boolean left;
 
     Scene gameScene;
+    ImageView sherepa;
 
-    public Sherepa(Scene gameScene) {
+    public Sherepa(Scene gameScene, ImageView sherepa) {
         this.gameScene = gameScene;
+        this.sherepa = sherepa;
     }
+
+    public void start() {
+        sherepa.setX(100);
+        sherepa.setY(100);
+
+
+    }
+
+
 
 
 }
