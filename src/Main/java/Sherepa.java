@@ -20,7 +20,6 @@ public class Sherepa {
         sherepa.setX(100);
         sherepa.setY(100);
 
-
     }
 
 

@@ -48,7 +48,7 @@ public class Main extends Application {
 
         StackPane layout = new StackPane(backgroundMenu, playButton, helpButton, exitButton, backButton);
         StackPane helpLayout = new StackPane(backgroundHelpMenu, backButton);
-        StackPane gameLayout = new StackPane(backgroundGameView, shrekView);
+        Pane gameLayout = new Pane(backgroundGameView, shrekView);
 
         Scene mainScene = new Scene(layout, 1280, 720);
         primaryStage.setScene(mainScene);
