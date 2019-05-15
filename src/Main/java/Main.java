@@ -33,6 +33,8 @@ public class Main extends Application {
         exitButton = new Button("Выход");
         backButton = new Button("Назад");
 
+        primaryStage.setOnCloseRequest(e -> System.exit(0));  //  Закрывается окно при нажатии на крестик
+
         StackPane.setMargin(playButton, new Insets(0, 0, 300, 0));
         StackPane.setMargin(helpButton, new Insets(0, 0, 0, 0));
         StackPane.setMargin(exitButton, new Insets(300, 0, 0, 0));
