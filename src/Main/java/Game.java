@@ -1,7 +1,11 @@
+import javafx.animation.AnimationTimer;
+import javafx.application.Platform;
+import javafx.scene.Node;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
+import javafx.util.Pair;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -23,7 +27,7 @@ public class Game {
         return imageView;
     }
 
-    Sherepa sherepa = new Sherepa(create(100, 100, 192, 192, Main.shrekView, Main.gameLayout));
+    Sherepa player = new Sherepa(create(200, 500, 192, 192, Main.shrekView, Main.gameLayout));
 
     public void createBlocks() throws FileNotFoundException {
         int levelWidth = LevelStructure.LEVEL1[0].length() * 60;
@@ -43,13 +47,55 @@ public class Game {
             }
         }
 
-        sherepa.translateXProperty().addListener((obs, old, newValue) -> {  //  Смещение заднего фона
-            int position = newValue.intValue();
+//        sherepa.translateXProperty().addListener((obs, old, newValue) -> {  //  Смещение заднего фона
+//            int position = newValue.intValue();
+//
+//            if (position > 640 && position < levelWidth - 640) {
+//                Main.gameLayout.setLayoutX(-(position - 640));
+//            }
+//        });
+    }
 
-            if (position > 640 && position < levelWidth - 640) {
-                Main.gameLayout.setLayoutX(-(position - 640));
-            }
-        });
+    public static boolean collison(ImageView image1, ImageView image2) {
+        Pair <Double, Double> point1 = new Pair<>(image1.getX(), image1.getY());
+        Pair <Double, Double> point2 = new Pair<>(image1.getX() + image1.getFitWidth(), image1.getY());
+        Pair <Double, Double> point3 = new Pair<>(image1.getX(), image1.getY() + image1.getFitHeight());
+        Pair <Double, Double> point4 = new Pair<>(image1.getX() + image1.getFitWidth(),
+                image1.getY() + image1.getFitHeight());
+
+        Pair <Double, Double> point5 = new Pair<>(image2.getX(), image2.getY());
+        Pair <Double, Double> point6 = new Pair<>(image2.getX() + image2.getFitWidth(), image2.getY());
+        Pair <Double, Double> point7 = new Pair<>(image2.getX(), image2.getY() + image2.getFitHeight());
+        Pair <Double, Double> point8 = new Pair<>(image2.getX() + image2.getFitWidth(),
+                image2.getY() + image2.getFitHeight());
+
+
+        if (point1.getKey() >= point5.getKey() && point1.getKey() <= point8.getKey() &&
+                point1.getValue() >= point5.getValue() && point1.getValue() <= point8.getValue())
+            return true;
+        if (point2.getKey() >= point5.getKey() && point2.getKey() <= point8.getKey() &&
+                point2.getValue() >= point5.getValue() && point2.getValue() <= point8.getValue())
+            return true;
+        if (point3.getKey() >= point5.getKey() && point3.getKey() <= point8.getKey() &&
+                point3.getValue() >= point5.getValue() && point3.getValue() <= point8.getValue())
+            return true;
+        if (point4.getKey() >= point5.getKey() && point4.getKey() <= point8.getKey() &&
+                point4.getValue() >= point5.getValue() && point4.getValue() <= point8.getValue())
+            return true;
+
+        if (point5.getKey() >= point1.getKey() && point5.getKey() <= point4.getKey() &&
+                point5.getValue() >= point1.getValue() && point5.getValue() <= point4.getValue())
+            return true;
+        if (point6.getKey() >= point1.getKey() && point6.getKey() <= point4.getKey() &&
+                point6.getValue() >= point1.getValue() && point6.getValue() <= point4.getValue())
+            return true;
+        if (point7.getKey() >= point1.getKey() && point7.getKey() <= point4.getKey() &&
+                point7.getValue() >= point1.getValue() && point7.getValue() <= point4.getValue())
+            return true;
+        if (point8.getKey() >= point1.getKey() && point8.getKey() <= point4.getKey() &&
+                point8.getValue() >= point1.getValue() && point8.getValue() <= point4.getValue())
+            return true;
+        return false;
     }
 
     public void start() throws FileNotFoundException {
@@ -67,11 +113,26 @@ public class Game {
                     if (keycode.equals(KeyCode.A)) left = false;
                     if (keycode.equals(KeyCode.D)) right = false;
         });
-        Timer timer = new Timer();
 
-        TimerTask timerTask = new TimerTask() {
+        AnimationTimer timer = new AnimationTimer() {
             @Override
-            public void run() {
+            public void handle(long now) {
+                boolean col = false;
+                for (ImageView platform : BlockProperties.platforms) {
+                    System.out.println(platform.getX());
+                    System.out.println(collison(player.sherepaView, platform));
+                    if (collison(player.sherepaView, platform)) {
+                       col = true;
+                    } else col = false;
+                }
+                System.out.println(col);
+                if (!col) {
+                    if (up) player.down(1);
+                    if (left) player.move(-1);
+                    if (right) player.move(1);
+                } else {
+
+                }
                 double a = 1;
 
                 double v = 1;
@@ -81,20 +142,12 @@ public class Game {
                 double y = 0;
                 y += v;
 
-//                Platform.runLater(() -> {
-//                    int t1 = 1;
-//                    t1++;
-//                    sherepa.setLayoutY(sherepa.getLayoutY() + t1);
-//                });
+                int t1 = 1;
+                t1++;
 
-                if (up) {
-                    v = -1;
-                    a = v * t - g * t * t * 0.5;
-                }
-                if (left) sherepa.move(-1);
-                if (right) sherepa.move(1);
+
             }
         };
-        timer.schedule(timerTask, 0, 5);
+        timer.start();
     }
 }

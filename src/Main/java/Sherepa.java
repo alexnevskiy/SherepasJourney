@@ -35,7 +35,6 @@ public class Sherepa extends Pane {
     static final int BLOCK_SIZE = 45;
     static final int SHEREPA_SIZE = 40;
     Scene gameScene;
-    Node sherepa;
     int offsetX = 0;
     int offsetY = 0;
     int width = 192;
@@ -44,11 +43,15 @@ public class Sherepa extends Pane {
 
 
     public Sherepa(ImageView sherepaView) {
-        this.sherepa = sherepaView;
+        this.sherepaView = sherepaView;
     }
 
     public void move(double x) {  //  Реализация движения персонажа
-        Platform.runLater(() -> sherepa.setLayoutX(sherepa.getLayoutX() + x));
+        Platform.runLater(() -> sherepaView.setLayoutX(sherepaView.getLayoutX() + x));
+    }
+
+    public void down(double y) {  //  Реализация движения персонажа
+        Platform.runLater(() -> sherepaView.setLayoutY(sherepaView.getLayoutY() + y));
     }
 
 //    public void moveX(int value){
@@ -175,7 +178,7 @@ public class Sherepa extends Pane {
                     if(up){
                         //player.jumpPlayer();
                     }
-                    if(left && player.sherepa.getTranslateX() >= 5){
+                    if(left && player.sherepaView.getTranslateX() >= 5){
                         //player.setScaleX(-1);
                         //player.animation.play();
                         //player.moveX(-5);
