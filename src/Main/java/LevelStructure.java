@@ -1,5 +1,7 @@
 public class LevelStructure {
 
+    static int levelWidth;
+
     public static final String[] LEVEL1 = new String[] {
             "000000000000000000000000000000",
             "000000000000000000000000000000",

@@ -10,7 +10,8 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
 import java.io.FileInputStream;
-import java.util.TreeSet;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 public class Main extends Application {
     Button playButton;  //  Кнопки в меню
@@ -18,16 +19,30 @@ public class Main extends Application {
     Button exitButton;
     Button backButton;
 
+    public static Pane gameLayout;
+    public static Scene gameScene;
+    //private Pane root = FXMLLoader.load(getClass().getResource("sample.fxml"));
+    static ImageView shrekView;
+
+    static {
+        try {
+            shrekView = new ImageView(new Image(new FileInputStream("./images/Shrek.png")));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public Main() throws IOException {
+    }
+
     public static void main(String[] args) {
         launch(args);
     }
 
     @Override
     public void start(final Stage primaryStage) throws Exception {
-        Pane root = FXMLLoader.load(getClass().getResource("sample.fxml"));
+
         primaryStage.setTitle("Sherepa's Journey");  //  Название окна
-        //primaryStage.setFullScreen(true);
-        //primaryStage.setMaximized(true);
         playButton = new Button("Играть");  //  Название кнопок
         helpButton = new Button("Помощь");
         exitButton = new Button("Выход");
@@ -42,29 +57,33 @@ public class Main extends Application {
 
         Image background = new Image(new FileInputStream("./images/BackgroundMenu.jpg"), 1280.0, 720.0, true, true);
         Image backgroundGame = new Image(new FileInputStream("./images/BackgroundGame.jpg"), 1280.0, 720.0, true, true);
-        Image shrek = new Image(new FileInputStream("./images/Shrek.png"));
         ImageView backgroundMenu = new ImageView(background);
         ImageView backgroundHelpMenu = new ImageView(background);
         ImageView backgroundGameView = new ImageView(backgroundGame);
-        ImageView shrekView = new ImageView(shrek);
 
         StackPane layout = new StackPane(backgroundMenu, playButton, helpButton, exitButton, backButton);
         StackPane helpLayout = new StackPane(backgroundHelpMenu, backButton);
-        Pane gameLayout = new Pane(backgroundGameView, shrekView);
+        gameLayout = new Pane(backgroundGameView);
 
         Scene mainScene = new Scene(layout, 1280, 720);
         primaryStage.setScene(mainScene);
         primaryStage.show();
         Scene helpScene = new Scene(helpLayout, 1280, 720);
-        Scene gameScene = new Scene(gameLayout, 1280, 720);
+        gameScene = new Scene(gameLayout, 1280, 720);
 
         playButton.setOnAction(e -> primaryStage.setScene(gameScene));
         helpButton.setOnAction(e -> primaryStage.setScene(helpScene));
         exitButton.setOnAction(e -> primaryStage.close());
         backButton.setOnAction(e -> primaryStage.setScene(mainScene));
 
-        Sherepa sherepa = new Sherepa(gameScene, shrekView);
-        sherepa.start();
+//        Game.create(100, 100, 192, 192, shrekView, gameLayout);
+//        Sherepa sherepa = new Sherepa(shrekView);
+//        sherepa.start();
+
+        Game game = new Game();
+        game.start();
+
+
     }
 }
 
