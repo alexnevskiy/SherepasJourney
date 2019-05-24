@@ -11,7 +11,7 @@ import javafx.stage.Stage;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
+
 
 public class Main extends Application {
     Button playButton;  //  Кнопки в меню
@@ -32,7 +32,7 @@ public class Main extends Application {
         }
     }
 
-    public Main() throws IOException {
+    public Main() {
     }
 
     public static void main(String[] args) {
@@ -71,19 +71,19 @@ public class Main extends Application {
         Scene helpScene = new Scene(helpLayout, 1280, 720);
         gameScene = new Scene(gameLayout, 1280, 720);
 
-        playButton.setOnAction(e -> primaryStage.setScene(gameScene));
+        playButton.setOnAction(e -> {
+            primaryStage.setScene(gameScene);
+            Game game = new Game();
+            try {
+                game.start();
+            } catch (FileNotFoundException ex) {
+                ex.printStackTrace();
+            }
+        });
+
         helpButton.setOnAction(e -> primaryStage.setScene(helpScene));
         exitButton.setOnAction(e -> primaryStage.close());
         backButton.setOnAction(e -> primaryStage.setScene(mainScene));
-
-//        Game.create(100, 100, 192, 192, shrekView, gameLayout);
-//        Sherepa sherepa = new Sherepa(shrekView);
-//        sherepa.start();
-
-        Game game = new Game();
-        game.start();
-
-
     }
 }
 
