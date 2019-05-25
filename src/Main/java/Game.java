@@ -16,7 +16,7 @@ public class Game {
     static int playerHeight = 91;
     static int playerWight = 64;
     static int speedY = 1;
-    int speedX = 3;
+    int speedX = 4;
     double playerUp;
     double playerDown;
     double playerLeft;
@@ -45,6 +45,11 @@ public class Game {
                         ImageView platform = create(j * 60, i * 60, 60, 60, blockView, Main.gameLayout);
                         BlockProperties.platforms.add(platform);
                         break;
+                    case '2':
+                        ImageView mario = new ImageView(new Image(new FileInputStream("./images/Mario.png")));
+                        Enemy enemy = new Enemy(create(j * 60, i * 60 + 19, 40, 40, mario, Main.gameLayout));
+                        Enemy.enemys.add(enemy);
+                        break;
                 }
             }
         }
@@ -69,6 +74,9 @@ public class Game {
         AnimationTimer timer = new AnimationTimer() {
             @Override
             public void handle(long now) {
+                for (Enemy enemy : Enemy.enemys) {
+                    enemy.moveX();
+                }
                 playerUp = player.sherepaView.getY();
                 playerDown = playerUp + playerHeight;
                 playerLeft = player.sherepaView.getX();
@@ -80,8 +88,7 @@ public class Game {
 
                 if (up && playerUp >= 1) player.jumpPlayer();
 
-                if (speedY < 10) speedY++;
-
+                speedY++;
                 player.moveY(speedY);
 
                 //  Передвижение заднего фона вместе с игроком
