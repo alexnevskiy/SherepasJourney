@@ -3,6 +3,10 @@ import javafx.scene.image.ImageView;
 public class Sherepa {
 
     ImageView sherepaView;
+    static int height = 91;
+    static int wight = 64;
+    static boolean flick = false;
+    static int flickTimer;
 
     public Sherepa(ImageView sherepaView) {
         this.sherepaView = sherepaView;
@@ -15,7 +19,7 @@ public class Sherepa {
             for (ImageView platform : BlockProperties.platforms) {  //  Проходит по всем платформам
                 if (sherepaView.getBoundsInParent().intersects(platform.getBoundsInParent())) {  //  Обнаружение коллизии
                     if (movingRight) {
-                        if (sherepaView.getX() + Game.playerWight == platform.getX()) {//  Если правая часть игрока
+                        if (sherepaView.getX() + wight == platform.getX()) {//  Если правая часть игрока
                             sherepaView.setX(sherepaView.getX() - 1);  //  вступает в коллизию с левой частью платформы,
                             return;  //  то игрок переносится на 1 пиксель влево для того, чтобы правильно работала
                         }  // вертикальная коллизия в следующем методе и цикл завершается
@@ -39,7 +43,7 @@ public class Sherepa {
             for (ImageView platform : BlockProperties.platforms) {  //  Проходит по всем платформам
                 if (sherepaView.getBoundsInParent().intersects(platform.getBoundsInParent())) {  //  Обнаружение коллизии
                     if (movingDown) {
-                        if (sherepaView.getY() + Game.playerHeight == platform.getY()) {  //  Если нижняя часть игрока
+                        if (sherepaView.getY() + height == platform.getY()) {  //  Если нижняя часть игрока
                             sherepaView.setY(sherepaView.getY() - 1);  //  вступает в коллизию с верхней частью
                             Game.speedY = 1;  //  платформы, то игрок переносится на 1 пиксель вверх для того, чтобы
                             Game.canJump = true;  //  правильно работала горизонтальная коллизия в прошлом методе,
@@ -62,6 +66,19 @@ public class Sherepa {
         if (Game.canJump) {  //  Если переменная равняется true, то скорость по у персонажа становится -20, то есть он
             Game.speedY = -20;  //  подпрыгивает и переменная становится false
             Game.canJump = false;
+        }
+    }
+
+    public void takingDamage() {  //  Проверка на получение урона от противника
+        for (int i = 0; i < Math.abs(Game.speedX); i++) {  //  Проходит по каждому пикселю при скорости по х
+            for (Enemy enemy : Enemy.enemys) {  //  Проходит по всем врагам
+                if (sherepaView.getBoundsInParent().intersects(enemy.enemyView.getBoundsInParent())) {  //  Коллизия
+                    flick = true;  //  Переменная мерцания персонажа становится true
+                    flickTimer = 180;  //  Таймер мерцания ставится на 180 мс, то есть на 3 секунды
+                    Game.speedY = -15;  //  Скорость игрока по у становится -15 для того, чтобы персонаж подпрыгнул при
+                    this.moveY(Game.speedY);  //  получении урона, затем прыжок персонажа с заданной скоростью
+                }
+            }
         }
     }
 }

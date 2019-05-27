@@ -26,11 +26,12 @@ public class Main extends Application {
 
     static {
         try {
-            shrekView = new ImageView(new Image(new FileInputStream("./images/Shrek.png")));
+            shrekView = new ImageView(new Image(new FileInputStream("./images/Shrek2.png")));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
     }
+
 
     public Main() {
     }
