@@ -94,15 +94,13 @@ public class Game {
                 if (Sherepa.flickTimer > 0) {
                     Sherepa.flickTimer--;  //  Уменьшение таймера мерцания персонажа
                     if (Sherepa.flickTimer % 10 < 5) {
-                        player.sherepaView.setViewport(new Rectangle2D(128, 192, 127, 191));
-                        return;
-                    }
-                    player.sherepaView.setViewport(new Rectangle2D(0, 0, 127, 191));
+                        player.sherepaView.setViewport(new Rectangle2D(128, 192, 128, 192));
+                    } else player.sherepaView.setViewport(new Rectangle2D(0, 0, 128, 192));
                 }
 
                 if (Sherepa.flickTimer == 0) {
                     Sherepa.flick = false;  //  flick = false, если время мерцания закончилось
-                    player.sherepaView.setViewport(new Rectangle2D(0, 0, 127, 191));
+                    player.sherepaView.setViewport(new Rectangle2D(0, 0, 128, 192));
                 }
 
                 if (!Sherepa.flick) player.takingDamage();  //  Если персонаж не мерцает, то проверка на получение урона
