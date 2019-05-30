@@ -1,6 +1,7 @@
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
@@ -26,7 +27,8 @@ public class Main extends Application {
 
     static {
         try {
-            shrekView = new ImageView(new Image(new FileInputStream("./images/Shrek2.png")));
+            shrekView = new ImageView(new Image(new FileInputStream("./images/Shrek4.png")));
+            shrekView.setViewport(new Rectangle2D(0, 0, 128, 192));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }

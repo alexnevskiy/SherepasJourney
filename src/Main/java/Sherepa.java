@@ -1,12 +1,15 @@
+import javafx.geometry.Rectangle2D;
 import javafx.scene.image.ImageView;
 
 public class Sherepa {
 
     ImageView sherepaView;
     static int height = 91;
-    static int wight = 64;
+    static int width = 64;
     static boolean flick = false;
+    static boolean attack = false;
     static int flickTimer;
+    static int attackTimer;
 
     public Sherepa(ImageView sherepaView) {
         this.sherepaView = sherepaView;
@@ -19,7 +22,7 @@ public class Sherepa {
             for (ImageView platform : BlockProperties.platforms) {  //  Проходит по всем платформам
                 if (sherepaView.getBoundsInParent().intersects(platform.getBoundsInParent())) {  //  Обнаружение коллизии
                     if (movingRight) {
-                        if (sherepaView.getX() + wight == platform.getX()) {//  Если правая часть игрока
+                        if (sherepaView.getX() + width == platform.getX()) {//  Если правая часть игрока
                             sherepaView.setX(sherepaView.getX() - 1);  //  вступает в коллизию с левой частью платформы,
                             return;  //  то игрок переносится на 1 пиксель влево для того, чтобы правильно работала
                         }  // вертикальная коллизия в следующем методе и цикл завершается
@@ -74,9 +77,21 @@ public class Sherepa {
             for (Enemy enemy : Enemy.enemys) {  //  Проходит по всем врагам
                 if (sherepaView.getBoundsInParent().intersects(enemy.enemyView.getBoundsInParent())) {  //  Коллизия
                     flick = true;  //  Переменная мерцания персонажа становится true
-                    flickTimer = 180;  //  Таймер мерцания ставится на 180 мс, то есть на 3 секунды
+                    flickTimer = 180;  //  Таймер мерцания ставится на 180, то есть на 3 секунды
                     Game.speedY = -15;  //  Скорость игрока по у становится -15 для того, чтобы персонаж подпрыгнул при
                     this.moveY(Game.speedY);  //  получении урона, затем прыжок персонажа с заданной скоростью
+                }
+            }
+        }
+    }
+
+    public void punch() {  //  Атака в ближнем бою
+        for (int i = 0; i < Math.abs(Game.speedX); i++) {  //  Проходит по каждому пикселю при скорости по х
+            for (Enemy enemy : Enemy.enemys) {  //  Проходит по всем врагам
+                if (sherepaView.getBoundsInParent().intersects(enemy.enemyView.getBoundsInParent()) && attack) {
+                    Enemy.enemys.remove(enemy);  //  Если возникла коллизия при ударе, то враг удаляется из списка
+                    Main.gameLayout.getChildren().remove(enemy.enemyView);  //  с врагами и удаляется с экрана
+                    return;
                 }
             }
         }

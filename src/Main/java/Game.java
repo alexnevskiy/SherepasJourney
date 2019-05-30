@@ -12,6 +12,9 @@ public class Game {
     boolean up;
     boolean right;
     boolean left;
+    boolean f;
+    static boolean moveRight;
+    static boolean moveLeft;
     static boolean canJump;
     int levelWidth = LevelStructure.LEVEL1[0].length() * 60;
     static int speedY = 1;
@@ -30,7 +33,7 @@ public class Game {
         return imageView;
     }
 
-    Sherepa player = new Sherepa(create(100, 100, Sherepa.wight, Sherepa.height, Main.shrekView, Main.gameLayout));
+    Sherepa player = new Sherepa(create(100, 100, Sherepa.width, Sherepa.height, Main.shrekView, Main.gameLayout));
 
     public void createBlocks() throws FileNotFoundException {
         for (int i = 0; i < LevelStructure.LEVEL1.length; i++) {
@@ -61,6 +64,7 @@ public class Game {
             if (keycode.equals(KeyCode.W)) up = true;
             if (keycode.equals(KeyCode.A)) left = true;
             if (keycode.equals(KeyCode.D)) right = true;
+            if (keycode.equals(KeyCode.F) && !Sherepa.flick) f = true;
         });
 
         Main.gameScene.setOnKeyReleased(key -> {  //  Если кнопка отжата, то переменная становится false
@@ -68,6 +72,7 @@ public class Game {
             if (keycode.equals(KeyCode.W)) up = false;
             if (keycode.equals(KeyCode.A)) left = false;
             if (keycode.equals(KeyCode.D)) right = false;
+            if (keycode.equals(KeyCode.F)) f = false;
         });
 
         AnimationTimer timer = new AnimationTimer() {
@@ -80,13 +85,38 @@ public class Game {
                 playerUp = player.sherepaView.getY();
                 playerDown = playerUp + Sherepa.height;
                 playerLeft = player.sherepaView.getX();
-                playerRight = playerLeft + Sherepa.wight;
+                playerRight = playerLeft + Sherepa.width;
 
-                if (right && playerLeft <= levelWidth - Sherepa.wight - 1) player.moveX(speedX);
+                if (f && !Sherepa.flick) { //  Если нажата клавиша f и персонаж не мерцает, то ...
+                    Sherepa.width = 84;  //  Атака происходит счёт расширения ImageView, в котором находится картинка
+                    player.sherepaView.setFitWidth(Sherepa.width);  //  бьющего персонажа
+                    Sherepa.attack = true;  //  Переменная, отвечающая за атаку становится true и выставляется таймер
+                    Sherepa.attackTimer = 30;  //  атаки на 30, то есть 0.5 секунды
+                }
 
-                if (left && playerLeft >= 1) player.moveX(-speedX);
+                if (left && playerLeft >= 1) {
+                    if (!Sherepa.attack) player.sherepaView.setViewport(new Rectangle2D(128, 0, 128, 192));
+                    player.moveX(-speedX);
+                    moveLeft = true;
+                    moveRight = false;
+                }
+
+                if (right && playerLeft <= levelWidth - Sherepa.width - 1) {
+                    if (!Sherepa.attack) player.sherepaView.setViewport(new Rectangle2D(0, 0, 128, 192));
+                    player.moveX(speedX);
+                    moveRight = true;
+                    moveLeft = false;
+                }
+
+                if (moveRight && Sherepa.attack) player.sherepaView.setViewport(new Rectangle2D(256, 0, 168, 192));
+
+                if (moveLeft && Sherepa.attack) player.sherepaView.setViewport(new Rectangle2D(424, 0, 168, 192));
 
                 if (up && playerUp >= 1) player.jumpPlayer();
+
+                player.punch();  //  Проверка на атаку в ближнем бою
+
+                if (!Sherepa.flick && !Sherepa.attack) player.takingDamage();  //  Проверка на получение урона
 
                 speedY++;
                 player.moveY(speedY);
@@ -94,16 +124,24 @@ public class Game {
                 if (Sherepa.flickTimer > 0) {
                     Sherepa.flickTimer--;  //  Уменьшение таймера мерцания персонажа
                     if (Sherepa.flickTimer % 10 < 5) {
-                        player.sherepaView.setViewport(new Rectangle2D(128, 192, 128, 192));
-                    } else player.sherepaView.setViewport(new Rectangle2D(0, 0, 128, 192));
+                        player.sherepaView.setVisible(false);
+                    } else player.sherepaView.setVisible(true);
                 }
 
-                if (Sherepa.flickTimer == 0) {
-                    Sherepa.flick = false;  //  flick = false, если время мерцания закончилось
-                    player.sherepaView.setViewport(new Rectangle2D(0, 0, 128, 192));
+                if (Sherepa.flickTimer == 0 && !Sherepa.attack) {
+                    Sherepa.flick = false;  //  flick = false, если время мерцания закончилось и нет атаки
+                    player.sherepaView.setVisible(true);
                 }
 
-                if (!Sherepa.flick) player.takingDamage();  //  Если персонаж не мерцает, то проверка на получение урона
+                Sherepa.attackTimer--;
+
+                if (Sherepa.attackTimer == 0  && !Sherepa.flick) {  //  Если время атаки закончилось и игрок не мерцает,
+                    if (moveRight) player.sherepaView.setViewport(new Rectangle2D(0, 0, 128, 192));
+                    if (moveLeft) player.sherepaView.setViewport(new Rectangle2D(128, 0, 128, 192));
+                    Sherepa.width = 64;
+                    player.sherepaView.setFitWidth(Sherepa.width);  //  то ставится обратно картинка с его шириной и
+                    Sherepa.attack = false;  //  переменная, отвечающая за атаку становится false
+                }
 
                 if (playerLeft > 640 && playerLeft < levelWidth - 640)  //  Передвижение заднего фона вместе с игроком
                     Main.gameLayout.setLayoutX(-(playerLeft - 640));
