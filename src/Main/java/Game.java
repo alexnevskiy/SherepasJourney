@@ -87,30 +87,42 @@ public class Game {
                 playerLeft = player.sherepaView.getX();
                 playerRight = playerLeft + Sherepa.width;
 
-                if (f && !Sherepa.flick) { //  Если нажата клавиша f и персонаж не мерцает, то ...
-                    Sherepa.width = 84;  //  Атака происходит счёт расширения ImageView, в котором находится картинка
-                    player.sherepaView.setFitWidth(Sherepa.width);  //  бьющего персонажа
+                if (f && !Sherepa.flick && Sherepa.attackTimer <= 0) { //  Если нажата клавиша f, персонаж не мерцает
+                    try {  //  и время атаки меньше или равно 0, то создаётся картинка удара
+                        Sherepa.punchView = new ImageView(new Image(new FileInputStream("./images/Punch.png")));
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                    Game.create((int)player.sherepaView.getX() + Sherepa.width, (int)player.sherepaView.getY(),
+                            40, Sherepa.height, Sherepa.punchView, Main.gameLayout);
+                    Sherepa.punchView.setViewport(new Rectangle2D(0, 0, 338, 338));
                     Sherepa.attack = true;  //  Переменная, отвечающая за атаку становится true и выставляется таймер
                     Sherepa.attackTimer = 30;  //  атаки на 30, то есть 0.5 секунды
                 }
 
                 if (left && playerLeft >= 1) {
-                    if (!Sherepa.attack) player.sherepaView.setViewport(new Rectangle2D(128, 0, 128, 192));
+                    player.sherepaView.setViewport(new Rectangle2D(128, 0, 128, 192));
                     player.moveX(-speedX);
                     moveLeft = true;
                     moveRight = false;
                 }
 
                 if (right && playerLeft <= levelWidth - Sherepa.width - 1) {
-                    if (!Sherepa.attack) player.sherepaView.setViewport(new Rectangle2D(0, 0, 128, 192));
+                    player.sherepaView.setViewport(new Rectangle2D(0, 0, 128, 192));
                     player.moveX(speedX);
                     moveRight = true;
                     moveLeft = false;
                 }
 
-                if (moveRight && Sherepa.attack) player.sherepaView.setViewport(new Rectangle2D(256, 0, 168, 192));
+                if (moveRight && Sherepa.attack) {  //  Обработка картинки во время удара и игрока, смотрящего вправо
+                    Sherepa.punchView.setX(player.sherepaView.getX() + Sherepa.width);
+                    Sherepa.punchView.setViewport(new Rectangle2D(0, 0, 338, 338));
+                }
 
-                if (moveLeft && Sherepa.attack) player.sherepaView.setViewport(new Rectangle2D(424, 0, 168, 192));
+                if (moveLeft && Sherepa.attack) {  //  Обработка картинки во время удара и игрока, смотрящего влево
+                    Sherepa.punchView.setX(player.sherepaView.getX() - 40);
+                    Sherepa.punchView.setViewport(new Rectangle2D(338, 0, 338, 338));
+                }
 
                 if (up && playerUp >= 1) player.jumpPlayer();
 
@@ -138,9 +150,8 @@ public class Game {
                 if (Sherepa.attackTimer == 0  && !Sherepa.flick) {  //  Если время атаки закончилось и игрок не мерцает,
                     if (moveRight) player.sherepaView.setViewport(new Rectangle2D(0, 0, 128, 192));
                     if (moveLeft) player.sherepaView.setViewport(new Rectangle2D(128, 0, 128, 192));
-                    Sherepa.width = 64;
-                    player.sherepaView.setFitWidth(Sherepa.width);  //  то ставится обратно картинка с его шириной и
-                    Sherepa.attack = false;  //  переменная, отвечающая за атаку становится false
+                    Main.gameLayout.getChildren().remove(Sherepa.punchView);  //  то проверка на состояние игрока и
+                    Sherepa.attack = false;  //  переменная, отвечающая за атаку, становится false
                 }
 
                 if (playerLeft > 640 && playerLeft < levelWidth - 640)  //  Передвижение заднего фона вместе с игроком

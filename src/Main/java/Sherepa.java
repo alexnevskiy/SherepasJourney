@@ -1,4 +1,3 @@
-import javafx.geometry.Rectangle2D;
 import javafx.scene.image.ImageView;
 
 public class Sherepa {
@@ -9,7 +8,8 @@ public class Sherepa {
     static boolean flick = false;
     static boolean attack = false;
     static int flickTimer;
-    static int attackTimer;
+    static int attackTimer = 0;
+    static ImageView punchView;
 
     public Sherepa(ImageView sherepaView) {
         this.sherepaView = sherepaView;
@@ -62,7 +62,8 @@ public class Sherepa {
                 }
             }
             sherepaView.setY(sherepaView.getY() + (movingDown ? 1 : -1));  //  То же самое, что и в прошлом методе,
-        }  //  только для вертикального передвижения персонажа
+            if (attack) punchView.setY(sherepaView.getY());  //  только для вертикального передвижения персонажа и
+        }  //  для удара, если переменная attack = true
     }
 
     public void jumpPlayer() {
@@ -88,7 +89,9 @@ public class Sherepa {
     public void punch() {  //  Атака в ближнем бою
         for (int i = 0; i < Math.abs(Game.speedX); i++) {  //  Проходит по каждому пикселю при скорости по х
             for (Enemy enemy : Enemy.enemys) {  //  Проходит по всем врагам
-                if (sherepaView.getBoundsInParent().intersects(enemy.enemyView.getBoundsInParent()) && attack) {
+                if ((sherepaView.getBoundsInParent().intersects(enemy.enemyView.getBoundsInParent()) && attack) ||
+                        (punchView != null && punchView.getBoundsInParent().intersects(enemy.enemyView.getBoundsInParent())
+                                && attack)) {  //  Коллизия игрока или удара с противником
                     Enemy.enemys.remove(enemy);  //  Если возникла коллизия при ударе, то враг удаляется из списка
                     Main.gameLayout.getChildren().remove(enemy.enemyView);  //  с врагами и удаляется с экрана
                     return;
