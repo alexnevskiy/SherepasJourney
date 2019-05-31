@@ -9,7 +9,7 @@ public class Enemy {
 
     public static ArrayList<Enemy> enemys = new ArrayList<>();
 
-    public Enemy(javafx.scene.image.ImageView enemyView) {
+    public Enemy(ImageView enemyView) {
         this.enemyView = enemyView;
     }
 
