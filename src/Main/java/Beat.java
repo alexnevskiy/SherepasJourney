@@ -5,7 +5,7 @@ import java.util.ArrayList;
 public class Beat {
 
     ImageView beatView;
-    int random;
+    int color;
     boolean right;
     static int reloadTimer;
 
@@ -13,7 +13,7 @@ public class Beat {
 
     public Beat(ImageView beatView, int random, boolean right) {
         this.beatView = beatView;
-        this.random = random;
+        this.color = random;
         this.right = right;
     }
 
@@ -37,9 +37,10 @@ public class Beat {
                     return;
                 }
             }
-            if (beatView.getX() < -31 || beatView.getX() > Game.levelWidth + 31) {  //  Если звук уходит за границы
+            if (beatView.getX() < -15 || beatView.getX() > Game.levelWidth + 15) {  //  Если звук уходит за границы
                 beats.remove(beatView);  //  игрового окна
                 Main.gameLayout.getChildren().remove(beatView);
+                return;
             }
             beatView.setX(beatView.getX() + (movingRight ? 1 : -1));
         }

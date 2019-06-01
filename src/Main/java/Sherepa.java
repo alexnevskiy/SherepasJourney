@@ -3,8 +3,8 @@ import javafx.scene.image.ImageView;
 public class Sherepa {
 
     ImageView sherepaView;
-    static int height = 91;
-    static int width = 64;
+    static int height = 50;
+    static int width = 50;
     static boolean flick = false;
     static boolean attack = false;
     static int flickTimer;
@@ -62,7 +62,7 @@ public class Sherepa {
                 }
             }
             sherepaView.setY(sherepaView.getY() + (movingDown ? 1 : -1));  //  То же самое, что и в прошлом методе,
-            if (attack) punchView.setY(sherepaView.getY());  //  только для вертикального передвижения персонажа и
+            if (attack) punchView.setY(sherepaView.getY() + 7);  //  только для вертикального передвижения персонажа и
         }  //  для удара, если переменная attack = true
     }
 

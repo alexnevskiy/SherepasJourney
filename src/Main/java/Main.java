@@ -27,8 +27,8 @@ public class Main extends Application {
 
     static {
         try {
-            shrekView = new ImageView(new Image(new FileInputStream("./images/Shrek4.png")));
-            shrekView.setViewport(new Rectangle2D(0, 0, 128, 192));
+            shrekView = new ImageView(new Image(new FileInputStream("./images/Sherepa.png")));
+            shrekView.setViewport(new Rectangle2D(0, 0, 180, 180));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -76,7 +76,7 @@ public class Main extends Application {
         StackPane.setMargin(exitButton, new Insets(300, 800, 0, 0));
         StackPane.setMargin(backButton, new Insets(600, 0, 0, 1080));
 
-        Image background = new Image(new FileInputStream("./images/BackgroundMenu2.jpg"), 1280.0, 720.0, true, true);
+        Image background = new Image(new FileInputStream("./images/BackgroundMenu.jpg"), 1280.0, 720.0, true, true);
         Image backgroundGame = new Image(new FileInputStream("./images/BackgroundGame.jpg"), 1280.0, 720.0, true, true);
         ImageView backgroundMenu = new ImageView(background);
         ImageView backgroundHelpMenu = new ImageView(background);
@@ -87,7 +87,6 @@ public class Main extends Application {
         gameLayout = new Pane(backgroundGameView);
 
         Scene mainScene = new Scene(layout, 1280, 720);
-//        mainScene.getStylesheets().add((getClass().getResource("/src/Main/css/styles.css")).toExternalForm());
         primaryStage.setScene(mainScene);
         primaryStage.show();
         Scene helpScene = new Scene(helpLayout, 1280, 720);
