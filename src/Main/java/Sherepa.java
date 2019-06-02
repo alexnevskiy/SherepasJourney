@@ -1,3 +1,4 @@
+import javafx.geometry.Rectangle2D;
 import javafx.scene.image.ImageView;
 
 public class Sherepa {
@@ -5,8 +6,10 @@ public class Sherepa {
     ImageView sherepaView;
     static int height = 50;
     static int width = 50;
+    static int health = 5;
     static boolean flick = false;
     static boolean attack = false;
+    static boolean died = false;
     static int flickTimer;
     static int attackTimer = 0;
     static ImageView punchView;
@@ -77,10 +80,17 @@ public class Sherepa {
         for (int i = 0; i < Math.abs(Game.speedX); i++) {  //  Проходит по каждому пикселю при скорости по х
             for (Enemy enemy : Enemy.enemys) {  //  Проходит по всем врагам
                 if (sherepaView.getBoundsInParent().intersects(enemy.enemyView.getBoundsInParent())) {  //  Коллизия
+                    Game.healthWidth -= 120;
+                    if (Game.healthWidth < 0) Game.healthWidth = 0;
+                    Game.healthHeight += 110;
+                    Game.healthView.setViewport(new Rectangle2D(0, Game.healthHeight - 110, Game.healthWidth, 110));
+                    Game.healthView.setFitWidth(Game.healthWidth / 2.5);
                     flick = true;  //  Переменная мерцания персонажа становится true
                     flickTimer = 180;  //  Таймер мерцания ставится на 180, то есть на 3 секунды
+                    health--;  //  Жизнь игрока отнимается
                     Game.speedY = -15;  //  Скорость игрока по у становится -15 для того, чтобы персонаж подпрыгнул при
                     this.moveY(Game.speedY);  //  получении урона, затем прыжок персонажа с заданной скоростью
+                    return;
                 }
             }
         }
@@ -97,6 +107,13 @@ public class Sherepa {
                     return;
                 }
             }
+        }
+    }
+
+    public void isDied() {  //  Проверка на смерть персонажа
+        if (sherepaView.getY() > 1280) health = 0;
+        if (health == 0) {
+            died = true;
         }
     }
 }

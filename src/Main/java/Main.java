@@ -19,20 +19,19 @@ public class Main extends Application {
     Button helpButton;
     Button exitButton;
     Button backButton;
+    Button restartButton;
+    Button menuButton;
+    Button endButton;
+
+    public static Stage window = new Stage();
 
     public static Pane gameLayout;
     public static Scene gameScene;
+    public static Scene mainScene;
+    public static Scene helpScene;
+    public static Scene diedScene;
+    public static Scene endGameScene;
     //private Pane root = FXMLLoader.load(getClass().getResource("sample.fxml"));
-    static ImageView shrekView;
-
-    static {
-        try {
-            shrekView = new ImageView(new Image(new FileInputStream("./images/Sherepa.png")));
-            shrekView.setViewport(new Rectangle2D(0, 0, 180, 180));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-    }
 
     String buttonStyle = "-fx-padding: 8 15 15 15;\n" +
             "    -fx-background-insets: 0,0 0 5 0, 0 0 6 0, 0 0 7 0;\n" +
@@ -47,7 +46,6 @@ public class Main extends Application {
             "    -fx-text-fill: #395306;" +
             "    -fx-font-size: 4.0em;";
 
-
     public Main() {
     }
 
@@ -56,18 +54,26 @@ public class Main extends Application {
     }
 
     @Override
-    public void start(final Stage primaryStage) throws Exception {
+    public void start(Stage primaryStage) throws Exception {
+
+        window = primaryStage;
 
         primaryStage.setTitle("Sherepa's Journey");  //  Название окна
         playButton = new Button("Играть");  //  Название кнопок
         helpButton = new Button("Помощь");
         exitButton = new Button("Выход");
         backButton = new Button("Назад");
+        restartButton = new Button("Начать заново");
+        menuButton = new Button("В главное меню");
+        endButton = new Button("Выйти в главное меню");
 
         playButton.setStyle(buttonStyle);
         helpButton.setStyle(buttonStyle);
         exitButton.setStyle(buttonStyle);
         backButton.setStyle(buttonStyle);
+        restartButton.setStyle(buttonStyle);
+        menuButton.setStyle(buttonStyle);
+        endButton.setStyle(buttonStyle);
 
         primaryStage.setOnCloseRequest(e -> System.exit(0));  //  Закрывается окно при нажатии на крестик
 
@@ -75,25 +81,35 @@ public class Main extends Application {
         StackPane.setMargin(helpButton, new Insets(0, 800, 0, 0));
         StackPane.setMargin(exitButton, new Insets(300, 800, 0, 0));
         StackPane.setMargin(backButton, new Insets(600, 0, 0, 1080));
+        StackPane.setMargin(restartButton, new Insets(0, 0, 150, 0));
+        StackPane.setMargin(menuButton, new Insets(0, 0, -150, 0));
+        StackPane.setMargin(endButton, new Insets(0, 0, 0, 0));
 
         Image background = new Image(new FileInputStream("./images/BackgroundMenu.jpg"), 1280.0, 720.0, true, true);
-        Image backgroundGame = new Image(new FileInputStream("./images/BackgroundGame.jpg"), 1280.0, 720.0, true, true);
+        Image backgroundGame = new Image(new FileInputStream("./images/BackgroundGame.jpg"));
+        Image backgroundHelp = new Image(new FileInputStream("./images/BackgroundHelp.jpg"), 1280.0, 720.0, true, true);
+        Image backgroundDied = new Image(new FileInputStream("./images/BackgroundDied.jpg"), 1280.0, 720.0, true, true);
+        Image backgroundEndGame = new Image(new FileInputStream("./images/BackgroundEndGame.jpg"), 1280.0, 720.0, true, true);
         ImageView backgroundMenu = new ImageView(background);
-        ImageView backgroundHelpMenu = new ImageView(background);
+        ImageView backgroundHelpMenu = new ImageView(backgroundHelp);
         ImageView backgroundGameView = new ImageView(backgroundGame);
+        ImageView backgroundDiedView = new ImageView(backgroundDied);
+        ImageView backgroundEndGameView = new ImageView(backgroundEndGame);
 
         StackPane layout = new StackPane(backgroundMenu, playButton, helpButton, exitButton, backButton);
         StackPane helpLayout = new StackPane(backgroundHelpMenu, backButton);
-        gameLayout = new Pane(backgroundGameView);
-
-        Scene mainScene = new Scene(layout, 1280, 720);
+        StackPane deadLayout = new StackPane(backgroundDiedView, restartButton, menuButton);
+        StackPane endGameLayout = new StackPane(backgroundEndGameView, endButton);
+        mainScene = new Scene(layout, 1280, 720);
         primaryStage.setScene(mainScene);
         primaryStage.show();
-        Scene helpScene = new Scene(helpLayout, 1280, 720);
-        gameScene = new Scene(gameLayout, 1280, 720);
+        helpScene = new Scene(helpLayout, 1280, 720);
+        diedScene = new Scene(deadLayout, 1280, 720);
+        endGameScene = new Scene(endGameLayout, 1280, 720);
 
         playButton.setOnAction(e -> {
-            primaryStage.setScene(gameScene);
+            gameLayout = new Pane(backgroundGameView);
+            window.setScene(gameScene = new Scene(gameLayout, 1280, 720));
             Game game = new Game();
             try {
                 game.start();
@@ -102,10 +118,20 @@ public class Main extends Application {
             }
         });
 
-        helpButton.setOnAction(e -> primaryStage.setScene(helpScene));
-        exitButton.setOnAction(e -> primaryStage.close());
-        backButton.setOnAction(e -> primaryStage.setScene(mainScene));
+        helpButton.setOnAction(e -> window.setScene(helpScene));
+        exitButton.setOnAction(e -> window.close());
+        backButton.setOnAction(e -> window.setScene(mainScene));
+        restartButton.setOnAction(e -> {
+            gameLayout = new Pane(backgroundGameView);
+            window.setScene(gameScene = new Scene(gameLayout, 1280, 720));
+            Game game = new Game();
+            try {
+                game.start();
+            } catch (FileNotFoundException ex) {
+                ex.printStackTrace();
+            }
+        });
+        menuButton.setOnAction(e -> window.setScene(mainScene));
+        endButton.setOnAction(e -> window.setScene(mainScene));
     }
 }
-
-

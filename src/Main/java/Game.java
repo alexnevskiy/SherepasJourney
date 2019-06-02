@@ -25,6 +25,20 @@ public class Game {
     double playerDown;
     double playerLeft;
     double playerRight;
+    AnimationTimer timer;
+    static ImageView healthView;
+    static int healthWidth = 590;
+    static int healthHeight = 110;
+    static ImageView playerView;
+    static {
+        try {
+            playerView = new ImageView(new Image(new FileInputStream("./images/Sherepa.png")));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        playerView.setViewport(new Rectangle2D(0, 0, 180, 180));
+    }
+
 
     public static ImageView create(int x, int y, int w, int h, ImageView imageView, Pane gameLayout) {
         imageView.setFitHeight(h);
@@ -35,7 +49,7 @@ public class Game {
         return imageView;
     }
 
-    Sherepa player = new Sherepa(create(100, 100, Sherepa.width, Sherepa.height, Main.shrekView, Main.gameLayout));
+    Sherepa player = new Sherepa(create(0, 500, Sherepa.width, Sherepa.height, playerView, Main.gameLayout));
 
     public void createBlocks() throws FileNotFoundException {
         for (int i = 0; i < LevelStructure.LEVEL1.length; i++) {
@@ -45,11 +59,36 @@ public class Game {
                     case '0':
                         break;
                     case '1':
-                        ImageView blockView = new ImageView(new Image(new FileInputStream("./images/Block.png")));
-                        ImageView platform = create(j * 60, i * 60, 60, 60, blockView, Main.gameLayout);
-                        BlockProperties.platforms.add(platform);
+                        ImageView UpLayer = new ImageView(new Image(new FileInputStream("./images/UpLayer.png")));
+                        ImageView UpLayerPlatform = create(j * 60, i * 60, 60, 60, UpLayer, Main.gameLayout);
+                        BlockProperties.platforms.add(UpLayerPlatform);
                         break;
                     case '2':
+                        ImageView downLayer = new ImageView(new Image(new FileInputStream("./images/DownLayer.png")));
+                        ImageView downLayerPlatform = create(j * 60, i * 60, 60, 60, downLayer, Main.gameLayout);
+                        BlockProperties.platforms.add(downLayerPlatform);
+                        break;
+                    case '3':
+                        ImageView Block = new ImageView(new Image(new FileInputStream("./images/Block.png")));
+                        ImageView BlockPlatform = create(j * 60, i * 60, 60, 60, Block, Main.gameLayout);
+                        BlockProperties.platforms.add(BlockPlatform);
+                        break;
+                    case '4':
+                        ImageView Dirt = new ImageView(new Image(new FileInputStream("./images/Dirt.png")));
+                        ImageView DirtPlatform = create(j * 60, i * 60, 60, 60, Dirt, Main.gameLayout);
+                        BlockProperties.platforms.add(DirtPlatform);
+                        break;
+                    case '5':
+                        ImageView DirtStone = new ImageView(new Image(new FileInputStream("./images/DirtStone.png")));
+                        ImageView DirtStonePlatform = create(j * 60, i * 60, 60, 60, DirtStone, Main.gameLayout);
+                        BlockProperties.platforms.add(DirtStonePlatform);
+                        break;
+                    case '6':
+                        ImageView Flag = new ImageView(new Image(new FileInputStream("./images/Flag.png")));
+                        ImageView FlagPlatform = create(j * 60, i * 60, 60, 60, Flag, Main.gameLayout);
+                        BlockProperties.platforms.add(FlagPlatform);
+                        break;
+                    case '9':
                         ImageView mario = new ImageView(new Image(new FileInputStream("./images/Mario.png")));
                         Enemy enemy = new Enemy(create(j * 60, i * 60 + 19, 40, 40, mario, Main.gameLayout));
                         Enemy.enemys.add(enemy);
@@ -61,6 +100,13 @@ public class Game {
 
     public void start() throws FileNotFoundException {
         createBlocks();
+
+        healthView = new ImageView(new Image(new FileInputStream("./images/Health.png")));
+        healthView.setViewport(new Rectangle2D(0, 0, healthWidth, healthHeight));
+        healthView.setFitWidth(healthWidth / 2.5);
+        healthView.setFitHeight(healthHeight / 2.5);
+        Main.gameLayout.getChildren().add(healthView);
+
         Main.gameScene.setOnKeyPressed(key -> {  //  Если кнопка нажата, то переменная становится true
             KeyCode keycode = key.getCode();
             if (keycode.equals(KeyCode.W)) up = true;
@@ -79,7 +125,7 @@ public class Game {
             if (keycode.equals(KeyCode.SPACE)) space = false;
         });
 
-        AnimationTimer timer = new AnimationTimer() {
+        timer = new AnimationTimer() {
             @Override
             public void handle(long now) {
                 for (Enemy enemy : Enemy.enemys) {
@@ -126,7 +172,7 @@ public class Game {
                             break;
                     }  //  Создание картинки ноты с нужными параметрами на экране
                     if (moveRight) create((int)player.sherepaView.getX() + Sherepa.width, (int)player.sherepaView.getY()
-                                    + 18, beatWidth * 2, 24, beatView, Main.gameLayout);
+                            + 18, beatWidth * 2, 24, beatView, Main.gameLayout);
                     else create((int)player.sherepaView.getX() - beatWidth * 2, (int)player.sherepaView.getY()
                             + 18, beatWidth * 2, 28, beatView, Main.gameLayout);
                     Random random = new Random();  //  Генерируется случайное число для выбора случайного цвета
@@ -178,6 +224,8 @@ public class Game {
 
                 if (!Sherepa.flick && !Sherepa.attack) player.takingDamage();  //  Проверка на получение урона
 
+                player.isDied();  //  Проверка на смерть персонажа
+
                 speedY++;
                 player.moveY(speedY);
 
@@ -204,8 +252,28 @@ public class Game {
                     Sherepa.attack = false;  //  удаление картинки удара и переменная, отвечающая за атаку, становится false
                 }
 
-                if (playerLeft > 640 && playerLeft < levelWidth - 640)  //  Передвижение заднего фона вместе с игроком
+                if (playerLeft > 640 && playerLeft < levelWidth - 640) { //  Передвижение заднего фона вместе с игроком
                     Main.gameLayout.setLayoutX(-(playerLeft - 640));
+                    healthView.setX(playerLeft - 640);
+                }
+
+                if (Sherepa.died || playerRight >= levelWidth - 180) {
+                    Sherepa.died = false;
+                    Sherepa.health = 5;
+                    Main.gameLayout.getChildren().clear();
+                    if (Sherepa.died) Main.window.setScene(Main.diedScene);
+                    else Main.window.setScene(Main.endGameScene);
+                    speedY = 1;
+                    healthWidth = 590;
+                    healthHeight = 110;
+                    Sherepa.flick = false;
+                    Sherepa.flickTimer = -1;
+                    Sherepa.attack = false;
+                    Sherepa.attackTimer = 0;
+                    Enemy.enemys.clear();
+                    Beat.beats.clear();
+                    timer.stop();
+                }
             }
         };
         timer.start();
