@@ -45,4 +45,13 @@ public class Beat {
             beatView.setX(beatView.getX() + (movingRight ? 1 : -1));
         }
     }
+
+    public static void check() {
+        if (!beats.isEmpty()) for (Beat beat : beats) {  //  Если лист со звуками не пустой, то
+            if (beat.right) beat.moveX(5);  //  проходит по этому листу и взависимости от направления звука
+            else beat.moveX(-5);  //  передвигает его
+        }
+
+        if (reloadTimer > 0) reloadTimer --;
+    }
 }

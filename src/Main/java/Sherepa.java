@@ -1,5 +1,10 @@
 import javafx.geometry.Rectangle2D;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.util.Random;
 
 public class Sherepa {
 
@@ -96,6 +101,44 @@ public class Sherepa {
         }
     }
 
+    public void flickCheck() {
+        if (flickTimer > 0) {
+            flickTimer--;  //  Уменьшение таймера мерцания персонажа
+            if (flickTimer % 10 < 5) {
+                sherepaView.setVisible(false);
+            } else sherepaView.setVisible(true);
+        }
+
+        if (flickTimer == 0 && !attack) {
+            flick = false;  //  flick = false, если время мерцания закончилось и нет атаки
+            sherepaView.setVisible(true);
+        }
+    }
+
+    public void hit() {
+        try {  //  и время атаки меньше или равно 0, то создаётся картинка удара
+            Sherepa.punchView = new ImageView(new Image(new FileInputStream("./images/Punch.png")));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        Game.create((int)sherepaView.getX() + width, (int)sherepaView.getY() + 20,
+                36, 36, punchView, Main.gameLayout);
+        punchView.setViewport(new Rectangle2D(0, 0, 338, 338));
+        attack = true;  //  Переменная, отвечающая за атаку становится true и выставляется таймер
+        attackTimer = 30;  //  атаки на 30, то есть 0.5 секунды
+    }
+
+    public void hitCheck() {
+        Sherepa.attackTimer--;
+
+        if (attackTimer == 0  && !flick) {  //  Если время атаки закончилось и игрок не мерцает,
+            if (Game.moveRight) sherepaView.setViewport(new Rectangle2D(0, 0, 180, 180));
+            if (Game.moveLeft) sherepaView.setViewport(new Rectangle2D(180, 0, 180, 180));
+            Main.gameLayout.getChildren().remove(punchView);  //  то проверка на состояние игрока,
+            attack = false;  //  удаление картинки удара и переменная, отвечающая за атаку, становится false
+        }
+    }
+
     public void punch() {  //  Атака в ближнем бою
         for (int i = 0; i < Math.abs(Game.speedX); i++) {  //  Проходит по каждому пикселю при скорости по х
             for (Enemy enemy : Enemy.enemys) {  //  Проходит по всем врагам
@@ -108,6 +151,53 @@ public class Sherepa {
                 }
             }
         }
+    }
+
+    public void punchCheck() {
+        if (Game.moveRight && attack) {  //  Обработка картинки во время удара и игрока, смотрящего вправо
+            punchView.setX(sherepaView.getX() + width);
+            punchView.setViewport(new Rectangle2D(0, 0, 130, 130));
+        }
+
+        if (Game.moveLeft && attack) {  //  Обработка картинки во время удара и игрока, смотрящего влево
+            punchView.setX(sherepaView.getX() - 36);
+            punchView.setViewport(new Rectangle2D(130, 0, 130, 130));
+        }
+    }
+
+    public void beat() {
+        ImageView beatView = null;  //  Создаётся пустая картинка, с последующим
+        try {  //  добавлением png файла
+            beatView = new ImageView(new Image(new FileInputStream("./images/Beat.png")));
+        } catch (FileNotFoundException e) {  //  Далее идёт создание объекта на экране, если персонаж повёрнут
+            e.printStackTrace();  //  вправо, то звук создаётся справа от игрока, если слева, то слева
+        }  //  Реализован выбор случайной ноты и случайного цвета
+        Random randomWidth = new Random();  //  Создаётся рандомный генератор, который генерирует от 0 до 2
+        int beatWidthRandom = randomWidth.nextInt(3);
+        int beatWidth = 0;  //  При помощи данной конструкции определяется ширина картинки
+        switch (beatWidthRandom) {
+            case 0 :
+                beatWidth = 14;  //  Двойная нота
+                break;
+            case 1 :
+                beatWidth = 10;  //  Нота с хвостиком
+                break;
+            case 2:
+                beatWidth = 6;  //  Одна нота
+                break;
+        }  //  Создание картинки ноты с нужными параметрами на экране
+        if (Game.moveRight) Game.create((int)sherepaView.getX() + width, (int)sherepaView.getY()
+                + 18, beatWidth * 2, 24, beatView, Main.gameLayout);
+        else Game.create((int)sherepaView.getX() - beatWidth * 2, (int)sherepaView.getY()
+                + 18, beatWidth * 2, 28, beatView, Main.gameLayout);
+        Random random = new Random();  //  Генерируется случайное число для выбора случайного цвета
+        Beat beat = new Beat(beatView, random.nextInt(7), Game.moveRight);
+        if (Game.moveRight) beat.beatView.setViewport(new Rectangle2D(beat.color * beatWidth * 10,
+                beatWidthRandom * 12 * 10, beatWidth * 10, 120));
+        if (Game.moveLeft) beat.beatView.setViewport(new Rectangle2D(beat.color * beatWidth * 10,
+                beatWidthRandom * 12 * 10 + 360, beatWidth * 10, 120));
+        Beat.beats.add(beat);  //  Новая картинка звука добавляется в лист со звуками и таймер перезарядки
+        Beat.reloadTimer = 30;  //  выставляется на 30, то есть на 0,5 секунды
     }
 
     public void isDied() {  //  Проверка на смерть персонажа
